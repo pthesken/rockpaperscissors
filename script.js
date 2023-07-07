@@ -1,32 +1,14 @@
-//play rps
-// report a winner
-// r,p,s
-//handle winning losing tieing
+const playerScore = document.querySelector(".player-score");
+const robotScore = document.querySelector(".robot-score");
+const btns = document.querySelectorAll(".btn");
+const output = document.querySelector(".output");
+const gameBoard = document.querySelector(".game");
 
-//ioce
-//I inputs: what goes into function? arguements and their types?
-//O outputs: what comes out of funtion? what does it return? what type?
-//C constraints: limitations, ie memory scalability etc
-//E edge cases: unexpected inputs, error handling
-
-//I none
-//O return r,p,s: one of three strings
-//C skip
-//E none
+let computerTotalWins = 0;
+let playerTotalWins = 0;
 
 const getComputerChoice = () => {
-  // generate random number
-  //associate each number with one of the three choices
-  // randomly return the chosen choice
-
   const randNum = Math.ceil(Math.random() * 3);
-  // if (randNum === 1) {
-  //   return "Rock";
-  // } else if (randNum === 2) {
-  //   return "Scissors";
-  // } else {
-  //   return "Paper";
-  // }
 
   switch (randNum) {
     case 1:
@@ -55,15 +37,11 @@ const getPlayerChoice = () => {
   return playerChoice;
 };
 
-//I playerSelection and computerSelection, strings
-//O a string declaring win, lose, tie
-//C n/a
-//E case of playerSelection, player inputting nothing/something unexpected
+const updateOutput = (msg) => {
+  output.innerText = msg;
+};
 
 const playRound = (playerSelection, computerSelection) => {
-  //compare playerSelction and computerSelection
-  //determine who wins
-  // return the outcome
   playerSelection = playerSelection.toLowerCase();
 
   const playerWins =
@@ -77,69 +55,40 @@ const playRound = (playerSelection, computerSelection) => {
     (computerSelection === "paper" && playerSelection === "rock");
 
   if (playerWins) {
-    console.log(
+    updateOutput(
       `You win this round! ${playerSelection} beats ${computerSelection}.`
     );
     return "Player wins!";
   } else if (computerWins) {
-    console.log(`You lose! ${computerSelection} beats ${playerSelection};`);
+    updateOutput(`You lose! ${computerSelection} beats ${playerSelection};`);
     return "Computer wins!";
   } else {
-    console.log(`${playerSelection} and ${computerSelection}. It's a tie!`);
+    updateOutput(`${playerSelection} and ${computerSelection}. It's a tie!`);
     return "It's a tie";
   }
 };
 
-//plays 5 games and decides the winner
-//I- none
-//O - the winner or loser, or its a tie
-//C- skip
-//E- what if player cancels game
+const game = (evt) => {
+  let computerChoice = getComputerChoice();
 
-const game = () => {
-  let computerTotalWins = 0;
-  let playerTotalWins = 0;
-  let ties = 0;
+  let playerChoice = evt.target.dataset.type;
 
-  for (let round = 1; round <= 5; round++) {
-    // get computer choice
-    let computerChoice = getComputerChoice();
-    // get player choice
-    let playerChoice = getPlayerChoice();
-    // If player hits cancel
-    if (!playerChoice) {
-      console.log("Game canceled");
-      return;
-    }
-    //let playerChoice = prompt(
-    // "Let's play rock, paper, scissors! Select rock, paper, or scissors."
-
-    //play a round
-    let roundOutcome = playRound(playerChoice, computerChoice);
-    if (roundOutcome === "Player wins!") {
-      playerTotalWins++;
-    } else if (roundOutcome === "Computer wins!") {
-      computerTotalWins++;
-    } else {
-      ties++;
-    }
-    //repeat 5 times
-    //get track of each round
-    //return overall winner
+  let roundOutcome = playRound(playerChoice, computerChoice);
+  if (roundOutcome === "Player wins!") {
+    playerTotalWins++;
+    playerScore.innerText = playerTotalWins;
+  } else if (roundOutcome === "Computer wins!") {
+    computerTotalWins++;
+    robotScore.innerText = computerTotalWins;
   }
-  if (playerTotalWins > computerTotalWins) {
-    console.log("You win the game! Refresh to play again!");
-  } else if (computerTotalWins > playerTotalWins) {
-    console.log("You lose the game! Refresh to play again!");
-  } else {
-    console.log("The game is a tie! Refresh to play again!");
+
+  if (playerTotalWins === 5) {
+    gameBoard.innerText = "You win the game! Refresh to play again!";
+  } else if (computerTotalWins === 5) {
+    gameBoard.innerText = "You lose the game! Refresh to play again!";
   }
 };
 
-game();
-
-// probably remove lower line?
-//let outcome = playRound("paper", "rock");
-
-//console.log(computerChoice);
-//console.log(outcome);
+btns.forEach((btn) => {
+  btn.addEventListener("click", game);
+});
